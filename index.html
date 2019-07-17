@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
+  <title>Splitter</title>
+  <meta name="description" content="">
+  <style>
+    :focus { outline: none }
+
+    *, :before, ::after { box-sizing: inherit }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      margin: 0;
+    }
+
+    html { box-sizing: border-box }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  <script>
+    const config = {
+      color: {
+        light: '#fff',
+        major: '#2980b9',
+      },
+      overlay: {
+        dark: 'hsla(0, 0%, 0%, 0.1)',
+        light: 'hsla(0, 0%, 100%, 0.1)',
+      },
+      space: {
+        m: 0.75,
+      },
+    }
+
+    const $ = React.createElement
+
+    const $box = (...args) => $('div', ...args)
+
+    const Button = (props) =>
+      $('button', {
+        style: {
+          backgroundColor: config.overlay.dark,
+          borderStyle: 'none',
+          color: 'inherit',
+          cursor: 'pointer',
+          display: 'block',
+          fontSize: 'inherit',
+          fontWeight: 'inherit',
+          lineHeight: 'inherit',
+          padding: config.space.m + 'rem',
+          width: '100%',
+        },
+        ...props,
+      })
+
+    const Input = (props) =>
+      $('input', {
+        name: 'src',
+        style: {
+          backgroundColor: config.overlay.light,
+          borderStyle: 'none',
+          color: 'inherit',
+          display: 'block',
+          fontSize: 'inherit',
+          fontWeight: 'inherit',
+          lineHeight: 'inherit',
+          padding: config.space.m + 'rem',
+          width: '100%',
+        },
+        ...props,
+      })
+
+    const Form = (props) => {
+      const [value, setValue] = React.useState(props.value)
+
+      return $(
+        'form',
+        {
+          onSubmit: () => {
+            props.submit(value)
+          },
+          style: {
+            alignItems: 'center',
+            display: 'flex',
+            height: '100%',
+            padding: config.space.m + 'rem',
+            width: '100%',
+          },
+        },
+        $box(
+          {
+            style: {
+              flexGrow: 1,
+            },
+          },
+          $(Input, {
+            onChange: (event) => {
+              setValue(event.target.value)
+            },
+            type: 'text',
+            value,
+          })
+        ),
+        $box(
+          {
+            style: {},
+          },
+          $(Button, { type: 'submit' }, 'Go')
+        )
+      )
+    }
+
+    const Frame = (props) => {
+      return $box(
+        {
+          style: {
+            height: '100%',
+            position: 'relative',
+            width: '100%',
+          },
+        },
+        $('iframe', {
+          src: props.src,
+          style: {
+            borderStyle: 'none',
+            height: '100%',
+            left: 0,
+            position: 'absolute',
+            top: 0,
+            width: '100%',
+          },
+        })
+      )
+    }
+
+    const Screen = ({ add, col, row }) => {
+      const [src, setSrc] = React.useState('')
+
+      return $box(
+        {
+          style: {
+            backgroundColor: config.overlay.dark,
+            display: 'flex',
+            flexDirection: 'column',
+            gridColumnStart: col,
+            gridRowStart: row,
+          },
+        },
+        $box(
+          { style: { flexGrow: 1 } },
+          src ? $(Frame, { src }) : $(Form, { submit: setSrc, value: src })
+        ),
+        $box(
+          { style: { display: 'flex' } },
+          $(
+            Button,
+            {
+              onClick: () => {
+                add({ col: col - 1, row: row })
+              },
+            },
+            '←'
+          ),
+          $(
+            Button,
+            {
+              onClick: () => {
+                add({ col: col, row: row - 1 })
+              },
+            },
+            '↑'
+          ),
+          $(
+            Button,
+            {
+              onClick: () => {
+                add({ col: col, row: row + 1 })
+              },
+            },
+            '↓'
+          ),
+          $(
+            Button,
+            {
+              onClick: () => {
+                add({ col: col + 1, row: row })
+              },
+            },
+            '→'
+          )
+        )
+      )
+    }
+
+    const App = () => {
+      const [screens, setScreens] = React.useState({ col: 1, row: 1 })
+      const [colMax, setColMax] = React.useState(1)
+      const [rowMax, setRowMax] = React.useState(1)
+
+      React.useEffect(() => {
+        screens.forEach(({ col, row }) => {
+          if (col > colMax) setColMax(col)
+          if (row > rowMax) setRowMax(row)
+        })
+      }, [screens])
+
+      const add = (screenNext) => {
+        const screensNext = screens.filter(
+          (screen) =>
+            !(screen.col === screenNext.col && screen.row === screenNext.row)
+        )
+
+        console.log(screens, screensNext)
+        screensNext.push(screenNext)
+
+        setScreens(screensNext)
+      }
+
+      return $box(
+        {
+          style: {
+            backgroundColor: config.color.major,
+            color: config.color.light,
+            display: 'grid',
+            gridColumnGap: '1px',
+            gridRowGap: '1px',
+            gridTemplateColumns: `repeat(${colMax}, 1fr)`,
+            gridTemplateRows: `repeat(${rowMax}, 1fr)`,
+            height: '100vh',
+          },
+        },
+        screens.map(({ col, row }) =>
+          $(Screen, {
+            add,
+            col,
+            key: `${col}${row}`,
+            row,
+          })
+        )
+      )
+    }
+
+    const render = (Component) =>
+      ReactDOM.render($(Component), document.getElementById('app'))
+
+    render(App)
+  </script>
+</body>
+
+</html>
+
