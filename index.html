@@ -68,7 +68,6 @@
 
     const Input = (props) =>
       $('input', {
-        name: 'src',
         style: {
           backgroundColor: config.overlay.light,
           borderStyle: 'none',
@@ -89,7 +88,9 @@
       return $(
         'form',
         {
-          onSubmit: () => {
+          onSubmit: (e) => {
+            e.preventDefault()
+
             props.submit(value)
           },
           style: {
@@ -115,10 +116,8 @@
           })
         ),
         $box(
-          {
-            style: {},
-          },
-          $(Button, { type: 'submit' }, 'Go')
+          {},
+          $(Button, { type: 'submit' }, '👌')
         )
       )
     }
@@ -165,7 +164,7 @@
         ),
         $box(
           { style: { display: 'flex' } },
-          $(
+          col > 1 && $(
             Button,
             {
               onClick: () => {
@@ -174,7 +173,7 @@
             },
             '←'
           ),
-          $(
+          row > 1 && $(
             Button,
             {
               onClick: () => {
