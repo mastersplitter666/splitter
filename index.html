@@ -37,8 +37,8 @@
         major: '#2980b9',
       },
       overlay: {
-        dark: 'hsla(0, 0%, 0%, 0.1)',
-        light: 'hsla(0, 0%, 100%, 0.1)',
+        dark: 'rgba(0, 0, 0, 0.1)',
+        light: 'rgba(255, 255, 255, 0.1)',
       },
       space: {
         m: 0.75,
@@ -184,7 +184,7 @@
               },
               '↑'
             ),
-          $(
+          row < 5 && $(
             Button,
             {
               onClick: () => {
@@ -193,7 +193,7 @@
             },
             '↓'
           ),
-          $(
+          col < 5 && $(
             Button,
             {
               onClick: () => {
