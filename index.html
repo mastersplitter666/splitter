@@ -96,9 +96,8 @@
           style: {
             alignItems: 'center',
             display: 'flex',
-            height: '100%',
+            flexGrow: 1,
             padding: config.space.m + 'rem',
-            width: '100%',
           },
         },
         $box(
@@ -115,10 +114,7 @@
             value,
           })
         ),
-        $box(
-          {},
-          $(Button, { type: 'submit' }, '👌')
-        )
+        $box({}, $(Button, { type: 'submit' }, '👌'))
       )
     }
 
@@ -126,9 +122,8 @@
       return $box(
         {
           style: {
-            height: '100%',
+            flexGrow: 1,
             position: 'relative',
-            width: '100%',
           },
         },
         $('iframe', {
@@ -159,29 +154,36 @@
           },
         },
         $box(
-          { style: { flexGrow: 1 } },
+          {
+            style: {
+              display: 'flex',
+              flexGrow: 1,
+            },
+          },
           src ? $(Frame, { src }) : $(Form, { submit: setSrc, value: src })
         ),
         $box(
           { style: { display: 'flex' } },
-          col > 1 && $(
-            Button,
-            {
-              onClick: () => {
-                add({ col: col - 1, row: row })
+          col > 1 &&
+            $(
+              Button,
+              {
+                onClick: () => {
+                  add({ col: col - 1, row: row })
+                },
               },
-            },
-            '←'
-          ),
-          row > 1 && $(
-            Button,
-            {
-              onClick: () => {
-                add({ col: col, row: row - 1 })
+              '←'
+            ),
+          row > 1 &&
+            $(
+              Button,
+              {
+                onClick: () => {
+                  add({ col: col, row: row - 1 })
+                },
               },
-            },
-            '↑'
-          ),
+              '↑'
+            ),
           $(
             Button,
             {
